@@ -22,3 +22,8 @@
 
 int error_report();
 int error_report_file(char *file);
+
+/* unexpected error codes:
+  -1: in save output file.
+
+*/

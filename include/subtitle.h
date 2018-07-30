@@ -7,6 +7,8 @@
     char *text;
   } subtitle_t;
 
+  #define __SRT_FORMAT "%s\r\n%s --> %s\r\n%s\r\n\r\n"
+  #define __SRT_SHORT_FORMAT " %s \r\n %s --> %s \r\n"
   #define SUBTITLE_H 1
 #endif
 

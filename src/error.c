@@ -23,9 +23,14 @@ int error_report(){
       report(__UNKNOWN_PARAMETERS);
       error_identifier = 3;
       break;
+    // 4 error number is with a file and execute error_report_file function
     case 5:
       report(__MISSING_PARAMETERS);
       error_identifier = 2;
+      break;
+    case 6:
+      report(__MISSING_INFORMATION);
+      error_identifier = 5;
       break;
   }
   exit(error_identifier);
@@ -34,6 +39,6 @@ int error_report(){
 
 int error_report_file(char *file){
   fprintf(stderr, "Error: %s: %s\n", __INACCESSIBLE_FILE, file);
-  exit(4);
-  return 4;
+  exit(error_number);
+  return error_number;
 }
