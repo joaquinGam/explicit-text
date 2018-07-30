@@ -128,6 +128,42 @@ int delete_subtitle(FILE *filein, FILE **fileout, int index){
   }
 }
 
+void add_subtitle(FILE *filein, FILE **fileout, subtitle_t subtitle){
+  rewind(filein);
+  char **actual_string;
+  char *last_index = NULL;
+  actual_string = read_subtitle_string(filein);
+
+  while (actual_string && subtitle.start > subtitle_time_by_string(actual_string[1])){
+    fprintf((*fileout), __SRT_FORMAT, actual_string[0], actual_string[1], actual_string[2], actual_string[3]);
+    last_index = actual_string[0];
+    actual_string = read_subtitle_string(filein);
+  }
+
+  int new_index;
+  if (!actual_string){
+    if (last_index){
+      new_index = str_to_int(last_index)+1;
+    } else {
+      new_index = 1;
+    }
+  } else {
+    new_index = str_to_int(actual_string[0]);
+  }
+
+  subtitle.index = new_index;
+  fprintf((*fileout), "%s", subtitle_to_string(subtitle));
+
+  if (actual_string){
+    do {
+      int actual_index = str_to_int(actual_string[0]) + 1;
+      actual_string[0] = str_by_longint((long int)(actual_index));
+      fprintf((*fileout), __SRT_FORMAT, actual_string[0], actual_string[1], actual_string[2], actual_string[3]);
+      actual_string = read_subtitle_string(filein);
+    } while (actual_string);
+  }
+}
+
 int save_fileout(FILE *filein, FILE **fileout){
   rewind(filein);
   rewind(*fileout);
@@ -179,7 +215,7 @@ void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **arg
       text = 1;
     } else if(text){
       subtitle_init( &subtitle, -1, inf_start_millis, inf_end_millis, argv[i]);
-      // add_subtitle(tmp_filein, tmp_fileout, subtitle);
+      add_subtitle(tmp_filein, &tmp_fileout, subtitle);
       if (isFirstOption){
         changeFile = 1;
         isFirstOption = 0;
@@ -200,7 +236,7 @@ void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **arg
       changeFile = 0;
     }
   }
-  
+
   // it always change tmp_filein by tmp_fileout, so always tmp_filein has the correct file
   if ((processing_options && save_fileout(tmp_filein, fileout))){
     fprintf(stderr, "(-) Error: An unexpected error has occurred.\n");

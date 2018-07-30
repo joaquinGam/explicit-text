@@ -14,7 +14,7 @@ void subtitle_init(subtitle_t *subtitle, int index, subtitle_time_t start, subti
 
 char *subtitle_to_string(subtitle_t subtitle){
   char *text = malloc(600);
-  sprintf(text, "%s\r\n%s --> %s\r\n%s\r\n \r\n", str_by_longint(subtitle.index), \
+  sprintf(text, __SRT_FORMAT, str_by_longint(subtitle.index), \
                subtitle_time_to_string(subtitle.start), subtitle_time_to_string(subtitle.end),\
                subtitle.text);
   text = realloc(text, strlen(text));

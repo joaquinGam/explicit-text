@@ -10,3 +10,9 @@ char *subtitle_time_to_string(subtitle_time_t milliseconds){
   text = realloc(text, strlen(text));
   return text;
 }
+
+subtitle_time_t subtitle_time_by_string(char *subtitle_time_string){
+  long int hours, minutes, seconds, milliseconds;
+  sscanf(subtitle_time_string, "%ld:%ld:%ld,%ld", &hours, &minutes, &seconds, &milliseconds);
+  return (subtitle_time_t)hours*3600000 + minutes*60000 + seconds*1000 + milliseconds;
+}
