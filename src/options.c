@@ -128,18 +128,16 @@ int delete_subtitle(FILE *filein, FILE **fileout, int index){
   }
 }
 
-void add_subtitle(FILE *filein, FILE **fileout, subtitle_t subtitle){
+int add_subtitle(FILE *filein, FILE **fileout, subtitle_t subtitle){
   rewind(filein);
   char **actual_string;
   char *last_index = NULL;
   actual_string = read_subtitle_string(filein);
-
   while (actual_string && subtitle.start > subtitle_time_by_string(actual_string[1])){
     fprintf((*fileout), __SRT_FORMAT, actual_string[0], actual_string[1], actual_string[2], actual_string[3]);
     last_index = actual_string[0];
     actual_string = read_subtitle_string(filein);
   }
-
   int new_index;
   if (!actual_string){
     if (last_index){
@@ -150,10 +148,8 @@ void add_subtitle(FILE *filein, FILE **fileout, subtitle_t subtitle){
   } else {
     new_index = str_to_int(actual_string[0]);
   }
-
   subtitle.index = new_index;
   fprintf((*fileout), "%s", subtitle_to_string(subtitle));
-
   if (actual_string){
     do {
       int actual_index = str_to_int(actual_string[0]) + 1;
@@ -162,6 +158,7 @@ void add_subtitle(FILE *filein, FILE **fileout, subtitle_t subtitle){
       actual_string = read_subtitle_string(filein);
     } while (actual_string);
   }
+  return new_index;
 }
 
 int save_fileout(FILE *filein, FILE **fileout){
@@ -177,8 +174,6 @@ int save_fileout(FILE *filein, FILE **fileout){
   return 0;
 }
 
-extern int error_number;
-
 void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **argv){
   subtitle_t subtitle;
   subtitle_time_t inf_start_millis, inf_end_millis;
@@ -187,11 +182,12 @@ void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **arg
   FILE *tmp_file = tmpfile();
   FILE *tmp_fileout = tmpfile();
   int changeFile = 0, isFirstOption = 1, processing_options = 0;
-  for (int i = 1; i < argc; i++){
+  int i = 1;
+  for (; i < argc; i++){
     if ((delete || startmillis || endmillis || text) && is_option(argv[i])){
-      error_number = 6;
-      error_report();
-    } else if(!strcmp("-b", argv[i])) {
+      ERROR_REPORT(6, argv[i-1]);
+    }
+    if(!strcmp("-b", argv[i])) {
       delete = 1;
     } else if(!strcmp("-i", argv[i])) {
       startmillis = 1;
@@ -199,9 +195,9 @@ void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **arg
       // verify_subtitles(file);
     } else if(delete) {
       if (delete_subtitle(tmp_filein, &tmp_fileout, str_to_int(argv[i]))){
-        printf("(-) --> The index to be eliminated is non-existent.\n");
+        fprintf(stderr, "(-)-> The index %s is non-existent.\n", argv[i]);
       } else {
-        printf("(+) --> The index %s has been removed correctly.\n", argv[i]);
+        printf("(+)-> The index %s has been removed correctly.\n", argv[i]);
       }
       changeFile = 1;
       delete = 0;
@@ -215,7 +211,8 @@ void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **arg
       text = 1;
     } else if(text){
       subtitle_init( &subtitle, -1, inf_start_millis, inf_end_millis, argv[i]);
-      add_subtitle(tmp_filein, &tmp_fileout, subtitle);
+      int index = add_subtitle(tmp_filein, &tmp_fileout, subtitle);
+      printf("(+)-> The index %d has been added correctly.\n", index);
       if (isFirstOption){
         changeFile = 1;
         isFirstOption = 0;
@@ -242,8 +239,6 @@ void executeProcessingOptions(FILE *filein, FILE **fileout, int argc, char **arg
     fprintf(stderr, "(-) Error: An unexpected error has occurred.\n");
   }
   if (delete || startmillis || endmillis || text){
-    error_number = 6;
-    error_report();
+    ERROR_REPORT(6, argv[i]);
   }
-
 }

@@ -1,44 +1,53 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "../include/error.h"
+#include "../include/string_utils.h"
 
-int error_number = 0;
-
-void report(char *message){
-  fprintf(stderr, "Error: %s%s\n", message, __LITTLE_HELP);
+void report1(char *message){
+  fprintf(stderr, "Error: %s %s\n", message, __LITTLE_HELP);
 }
 
-int error_report(){
+void report2(char *message, char *str){
+  fprintf(stderr, "Error: %s %s\n", message, str);
+}
+
+int error_report1(int32_t error_number){
   int error_identifier = 0;
   switch (error_number){
     case 1:
-      report(__MORE_PARAMETERS);
+      REPORT(__MORE_PARAMETERS);
       error_identifier = 1;
       break;
     case 2:
-      report(__MISSING_INFORMATION);
+      REPORT(__MISSING_INFORMATION);
       error_identifier = 2;
       break;
     case 3:
-      report(__UNKNOWN_PARAMETERS);
+      REPORT(__UNKNOWN_PARAMETERS);
       error_identifier = 3;
       break;
-    // 4 error number is with a file and execute error_report_file function
     case 5:
-      report(__MISSING_PARAMETERS);
+      REPORT(__MISSING_PARAMETERS);
       error_identifier = 2;
-      break;
-    case 6:
-      report(__MISSING_INFORMATION);
-      error_identifier = 5;
       break;
   }
   exit(error_identifier);
   return error_identifier;
 }
 
-int error_report_file(char *file){
-  fprintf(stderr, "Error: %s: %s\n", __INACCESSIBLE_FILE, file);
-  exit(error_number);
-  return error_number;
+int error_report2(int32_t error_number, char *string){
+  int error_identifier = 0;
+  switch (error_number){
+    case 4:
+      REPORT(__INACCESSIBLE_FILE, string);
+      error_identifier = 4;
+      break;
+    case 6:
+      REPORT(__MISSING_INFORMATION_IN_PARAMETER, string);
+      error_identifier = 5;
+      break;
+  }
+  exit(error_identifier);
+  return error_identifier;
 }

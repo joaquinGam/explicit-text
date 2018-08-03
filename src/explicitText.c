@@ -15,8 +15,7 @@ int main (int argc, char *argv[]){
 
   // error reporting
   if (io_state < 0){
-    error_number = fabs(io_state);
-    error_report();
+    ERROR_REPORT(fabs(io_state));
   } else if (io_state == 5){
     exit(0);
     return 0;
@@ -24,19 +23,16 @@ int main (int argc, char *argv[]){
 
   // open files
   if (path_filein == NULL || (io_state == 0 && path_fileout == NULL)){
-    error_number = 2;
-    error_report();
+    ERROR_REPORT(2);
   } else {
     filein = fopen(path_filein, "r");
     if (filein == NULL){
-      error_number = 4;
-      error_report_file(path_filein);
+      ERROR_REPORT(4, path_filein);
     }
     if (path_fileout != NULL){
       fileout = fopen(path_fileout, "w+");
       if (fileout == NULL){
-        error_number = 4;
-        error_report_file(path_fileout);
+        ERROR_REPORT(4, path_fileout);
       }
     }
   }

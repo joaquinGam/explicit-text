@@ -2,6 +2,7 @@
   #define __MISSING_PARAMETERS  "missing parameters."
   #define __MORE_PARAMETERS  "a lot of parameters -f or -o."
   #define __MISSING_INFORMATION "missing information."
+  #define __MISSING_INFORMATION_IN_PARAMETER "missing information in parameter "
   #define __UNKNOWN_PARAMETERS "unknown one or more parameters."
   #define __LITTLE_HELP  " Please try: 'explicitText --help' for more information"
   #define __INACCESSIBLE_FILE "inaccessible file"
@@ -16,12 +17,21 @@
                           \r\n     -v         \t search errors in the subtitles \
                           \r\n -f is obligatory. \
                           \r\n -o is obligatory if any modification operation is required."
-
   #define ERROR_H
+
+  // this is the magic way to have optional parameters without clarifying how many happened
+  #define NARGS(...) NARGS_(__VA_ARGS__, 5, 4, 3, 2, 1, 0)
+  #define NARGS_(_5, _4, _3, _2, _1, N, ...) N
+
+  #define CONC(A, B) CONC_(A, B)
+  #define CONC_(A, B) A##B
+
+  #define ERROR_REPORT(...) CONC(error_report, NARGS(__VA_ARGS__))(__VA_ARGS__)
+  #define REPORT(...) CONC(report, NARGS(__VA_ARGS__))(__VA_ARGS__)
 #endif
 
-int error_report();
-int error_report_file(char *file);
+int error_report1(int32_t error_number);
+int error_report2(int32_t error_number, char *string);
 
 /* unexpected error codes:
   -1: in save output file.
