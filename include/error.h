@@ -1,3 +1,4 @@
+#include "str_list.h"
 #ifndef ERROR_H
   #define __MISSING_PARAMETERS  "missing parameters."
   #define __MORE_PARAMETERS  "a lot of parameters -f or -o."
@@ -16,8 +17,7 @@
                           \r\n                                  \t and correct the following indexes\
                           \r\n     -v         \t search errors in the subtitles \
                           \r\n -f is obligatory. \
-                          \r\n -o is obligatory if any modification operation is required."
-  #define ERROR_H
+                          \r\n -o is obligatory if any modification operation is requested."
 
   // this is the magic way to have optional parameters without clarifying how many happened
   #define NARGS(...) NARGS_(__VA_ARGS__, 5, 4, 3, 2, 1, 0)
@@ -28,12 +28,10 @@
 
   #define ERROR_REPORT(...) CONC(error_report, NARGS(__VA_ARGS__))(__VA_ARGS__)
   #define REPORT(...) CONC(report, NARGS(__VA_ARGS__))(__VA_ARGS__)
+
+  int error_report1(int32_t error_number);
+  int error_report2(int32_t error_number, char *string);
+  void error_list_report(str_list_t err_list, int close_program);
+
+  #define ERROR_H
 #endif
-
-int error_report1(int32_t error_number);
-int error_report2(int32_t error_number, char *string);
-
-/* unexpected error codes:
-  -1: in save output file.
-
-*/

@@ -3,6 +3,7 @@
 #include <string.h>
 #include "../include/error.h"
 #include "../include/string_utils.h"
+#include "../include/str_list.h"
 
 void report1(char *message){
   fprintf(stderr, "Error: %s %s\n", message, __LITTLE_HELP);
@@ -50,4 +51,15 @@ int error_report2(int32_t error_number, char *string){
   }
   exit(error_identifier);
   return error_identifier;
+}
+
+void error_list_report(str_list_t err_list, int close_program){
+  str_list_t tmp_list = err_list;
+  while (tmp_list != NULL){
+    REPORT(tmp_list->element, "");
+    tmp_list = tmp_list->next;
+  }
+  if (close_program){
+    exit(close_program);
+  }
 }

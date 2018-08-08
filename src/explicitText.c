@@ -16,7 +16,7 @@ int main (int argc, char *argv[]){
   // error reporting
   if (io_state < 0){
     ERROR_REPORT(fabs(io_state));
-  } else if (io_state == 5){
+  } else if (io_state == 3){
     exit(0);
     return 0;
   }
@@ -39,7 +39,6 @@ int main (int argc, char *argv[]){
 
   executeProcessingOptions( filein, &fileout, argc, argv);
 
-  fclose(filein);
   if (fileout != NULL){
     fclose(fileout);
   }
