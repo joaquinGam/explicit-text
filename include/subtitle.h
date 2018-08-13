@@ -28,6 +28,8 @@
   int delete_subtitle(FILE *filein, FILE **fileout, int index);
   int add_subtitle(FILE *filein, FILE **fileout, subtitle_t subtitle);
   subtitle_t read_subtitle(FILE *file);
+  void verify_subtitle_file(FILE *file);
+  void free_subtitle_string(char ***string);
 
   #define SUBTITLE_H 1
 #endif

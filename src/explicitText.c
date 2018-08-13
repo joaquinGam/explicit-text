@@ -39,6 +39,7 @@ int main (int argc, char *argv[]){
 
   executeProcessingOptions( filein, &fileout, argc, argv);
 
+  fclose(filein);
   if (fileout != NULL){
     fclose(fileout);
   }
